@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>videodl</title>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <header>
+    <h1>videodl</h1>
+    <form method="post" action="/download" class="dl-form">
+      <input type="url" name="url" placeholder="Paste a video or playlist URL…" required autofocus>
+      <button type="submit">Download</button>
+    </form>
+  </header>
+
+  <section id="jobs" class="jobs">
+    {% for job in jobs %}
+      {% include "_job.html" %}
+    {% endfor %}
+  </section>
+
+  <section class="grid">
+    {% for video in videos %}
+      {% include "_tile.html" %}
+    {% else %}
+      <p class="empty">No videos yet. Paste a URL above to get started.</p>
+    {% endfor %}
+  </section>
+
+  <script src="/static/sse.js"></script>
+</body>
+</html>

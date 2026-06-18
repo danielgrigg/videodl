@@ -1,0 +1,7 @@
+<div class="job state-{{ job.state.value }}" data-id="{{ job.id }}">
+  <span class="job-url" title="{{ job.url }}">{{ job.url }}</span>
+  <span class="job-state">{{ job.state.value }}</span>
+  <span class="job-pct">{{ job.pct }}</span>
+  <span class="job-speed">{{ job.speed }}</span>
+  {% if job.error %}<span class="job-error" title="{{ job.error }}">{{ job.error }}</span>{% endif %}
+</div>

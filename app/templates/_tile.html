@@ -1,0 +1,10 @@
+<article class="tile">
+  <a href="/videos/{{ video.name | urlencode }}" class="thumb"
+     data-name="{{ video.name }}">
+    <img src="/thumb/{{ video.name | urlencode }}" alt="" loading="lazy">
+    <span class="play">▶</span>
+  </a>
+  <div class="meta">
+    <span class="name" title="{{ video.name }}">{{ video.name }}</span>
+  </div>
+</article>

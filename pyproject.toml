@@ -1,0 +1,29 @@
+[project]
+name = "videodl"
+version = "0.1.0"
+description = "Download source videos with yt-dlp and browse/play them on the tailnet."
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "jinja2",
+    "yt-dlp",
+    "python-multipart",
+    "sse-starlette",
+    "pydantic-settings",
+]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "mypy",
+]
+
+[tool.mypy]
+strict = true
+python_version = "3.12"
+
+# yt-dlp ships no stubs — ignore only that import, keep strict everywhere else
+[[tool.mypy.overrides]]
+module = ["yt_dlp.*"]
+ignore_missing_imports = true

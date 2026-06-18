@@ -1,0 +1,13 @@
+services:
+  videodl:
+    build: .
+    ports:
+      - "8080:8080"           # reachable on the Tailscale IP
+    volumes:
+      # Host storage path is configurable for easy distribution across machines.
+      # Set VIDEO_STORAGE_PATH in .env (defaults to the studio NAS path).
+      - ${VIDEO_STORAGE_PATH:-/srv/data0/studio/videos}:/data/videos
+    environment:
+      - VIDEO_DIR=/data/videos
+      - MAX_CONCURRENT=${MAX_CONCURRENT:-2}
+    restart: unless-stopped
