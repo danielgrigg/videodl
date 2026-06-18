@@ -36,3 +36,8 @@ down:
 # Build the image only
 build:
     docker compose build
+
+# Pull the latest published image and (re)start on the server
+deploy:
+    docker compose -f compose.prod.yaml pull
+    docker compose -f compose.prod.yaml up -d

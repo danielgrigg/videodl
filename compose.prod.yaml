@@ -1,0 +1,19 @@
+# Production compose for the enclave server. Pulls the published image from GHCR
+# instead of building from source — only this file (and a .env) is needed there.
+#
+#   docker compose -f compose.prod.yaml pull
+#   docker compose -f compose.prod.yaml up -d
+#
+# Pin VIDEODL_TAG in .env (e.g. a short SHA or vX.Y.Z) for reproducible deploys;
+# defaults to :latest.
+services:
+  videodl:
+    image: ghcr.io/danielgrigg/videodl:${VIDEODL_TAG:-latest}
+    ports:
+      - "8080:8080"           # reachable on the Tailscale IP
+    volumes:
+      - ${VIDEO_STORAGE_PATH:-/srv/data0/studio/videos}:/data/videos
+    environment:
+      - VIDEO_DIR=/data/videos
+      - MAX_CONCURRENT=${MAX_CONCURRENT:-2}
+    restart: unless-stopped

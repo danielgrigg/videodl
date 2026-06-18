@@ -18,17 +18,39 @@ By default `just dev` writes downloads to `./data/videos`. Override with
 
 ## Deploy (Docker)
 
-The host storage path is the one knob you change per machine:
+CI publishes the image to GitHub Container Registry on every push to `main` (tagged
+`latest` + the short commit SHA) and on `v*` tags (semver tags):
+
+```
+ghcr.io/danielgrigg/videodl:latest
+```
+
+On the **enclave server** you only need `compose.prod.yaml` and a `.env` — it pulls
+the image instead of building from source:
 
 ```sh
 cp .env.example .env
-# edit VIDEO_STORAGE_PATH to point at your video directory
-just up           # docker compose up --build, serves on :8080
+# edit VIDEO_STORAGE_PATH; optionally pin VIDEODL_TAG to a SHA/vX.Y.Z
+just deploy        # docker compose -f compose.prod.yaml pull && up -d
+```
+
+The package is **private** (it inherits the repo's visibility), so the server must
+authenticate to GHCR once with a personal access token that has `read:packages`:
+
+```sh
+echo "$GHCR_PAT" | docker login ghcr.io -u danielgrigg --password-stdin
 ```
 
 The container process must have **read-write** on `VIDEO_STORAGE_PATH` (downloads
 write there, and `.thumbs/` is created inside it). Match the container user's UID/GID
 to the directory owner, or `chown` it.
+
+### Local Docker (build from source)
+
+```sh
+cp .env.example .env
+just up            # docker compose up --build, serves on :8080
+```
 
 ## Configuration
 
