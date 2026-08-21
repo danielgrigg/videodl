@@ -13,3 +13,5 @@ __pycache__/
 
 # Local video data (never commit downloads)
 /data/
+
+.DS_Store

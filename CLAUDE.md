@@ -2,21 +2,46 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Status
+## Layout
 
-The repo currently contains **only `docs/videodl-plan.md`** — the application code has not been scaffolded yet. The plan is the source of truth for design decisions. When implementing, follow the build order at the bottom of that document (sections "Build order" and "Project structure") and keep the structure described there.
+The app is scaffolded and deployed. `docs/videodl-plan.md` remains the record of *why* the
+design is what it is; the invariants below are the part that is still load-bearing.
+
+- `app/config.py` — typed settings (`pydantic-settings`); `settings` is a module-level singleton.
+- `app/media.py` — filesystem scan, path resolution, ffmpeg thumbnails. No yt-dlp here.
+- `app/jobs.py` — the yt-dlp boundary: `Job` model, in-memory registry, bounded thread pool.
+- `app/main.py` — routes only: dashboard, `/download`, `/events` (SSE), `/videos/{name}`, `/thumb/{name}`.
+- `app/templates/`, `app/static/` — Jinja2 server-rendered UI; `sse.js` patches job rows in place.
 
 ## What videodl is
 
 A single-container, server-rendered web app for downloading source videos with yt-dlp and browsing/playing them on a home Ubuntu server, reached over Tailscale at `video.griggx.com`. No auth (tailnet is the perimeter), no database (filesystem is the source of truth; in-memory job registry covers in-flight state only).
 
-## Commands (once scaffolded)
+## Commands
 
-- Dev server: `uv run uvicorn app.main:app --reload`
-- Typecheck: `uv run mypy app` — must pass under `--strict` (already configured in `pyproject.toml`)
-- Add a dependency: `uv add <pkg>` (commit the resulting `uv.lock`)
-- Refresh yt-dlp (extractors rot fast): `uv lock --upgrade-package yt-dlp` then rebuild the image
-- Container: `docker compose up --build`
+Everything is a `just` recipe — run `just` to list them.
+
+- `just install` — sync deps from the lockfile
+- `just dev` — uvicorn autoreload on :8080, writing to `./data/videos` (override: `just dev video_dir=/some/path`)
+- `just typecheck` — `mypy app` under `--strict`; **the only gate CI enforces**, and there is no
+  test suite, so type coverage carries the weight tests normally would. Must pass clean.
+- `just check` — what CI runs
+- `just update-ytdlp` — re-lock yt-dlp to its latest release (extractors rot fast)
+- `just up` / `just build` / `just down` — local Docker stack
+
+Add a dependency with `uv add <pkg>` and commit the resulting `uv.lock`.
+
+Note the image installs with `uv sync --frozen`, so **rebuilding alone will not pick up a newer
+yt-dlp** — the lockfile has to change first. A weekly workflow (`refresh-ytdlp.yml`) does that
+bump and republishes automatically.
+
+## Deployment
+
+CI publishes `ghcr.io/danielgrigg/videodl:latest` + a short-SHA tag on every push to `main`.
+The enclave server does **not** deploy from this repo's `compose.prod.yaml` — its service is
+defined in the griggx-gitops repo (`nodes/enclave/compose.yml`, portless behind traefik,
+`user: "1000:1000"`) and rolled out with `just enclave-deploy videodl` from there. Treat that
+file as authoritative for production; `compose.prod.yaml` is the standalone path only.
 
 ## Architecture invariants
 
