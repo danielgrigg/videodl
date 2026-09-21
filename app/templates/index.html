@@ -21,13 +21,18 @@
     {% endfor %}
   </section>
 
-  <section class="grid">
-    {% for video in videos %}
-      {% include "_tile.html" %}
-    {% else %}
+  {% for folder, videos in folders %}
+    <section class="grid">
+      {% if folder %}<h2 class="folder">{{ folder }}</h2>{% endif %}
+      {% for video in videos %}
+        {% include "_tile.html" %}
+      {% endfor %}
+    </section>
+  {% else %}
+    <section class="grid">
       <p class="empty">No videos yet. Paste a URL above to get started.</p>
-    {% endfor %}
-  </section>
+    </section>
+  {% endfor %}
 
   <script src="/static/sse.js"></script>
 </body>

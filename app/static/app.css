@@ -97,6 +97,16 @@ h1 {
   gap: 1.25rem;
 }
 
+.grid + .grid { padding-top: 0; }
+
+.folder {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
 .tile {
   background: var(--panel);
   border: 1px solid var(--border);

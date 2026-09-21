@@ -1,7 +1,6 @@
 <article class="tile">
-  <a href="/videos/{{ video.name | urlencode }}" class="thumb"
-     data-name="{{ video.name }}">
-    <img src="/thumb/{{ video.name | urlencode }}" alt="" loading="lazy">
+  <a href="/videos/{{ video.path | urlencode }}" class="thumb">
+    <img src="/thumb/{{ video.path | urlencode }}" alt="" loading="lazy">
     <span class="play">▶</span>
   </a>
   <div class="meta">

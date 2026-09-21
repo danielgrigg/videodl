@@ -36,7 +36,10 @@ async def index(request: Request) -> HTMLResponse:
     return templates.TemplateResponse(
         request,
         "index.html",
-        {"videos": media.list_videos(), "jobs": list(jobs.jobs.values())},
+        {
+            "folders": media.group_by_folder(media.list_videos()),
+            "jobs": list(jobs.jobs.values()),
+        },
     )
 
 
@@ -61,19 +64,19 @@ async def events(request: Request) -> EventSourceResponse:
     return EventSourceResponse(stream())
 
 
-@app.get("/videos/{name}")
-async def serve_video(name: str) -> FileResponse:
-    path = media.video_path(name)
+@app.get("/videos/{video:path}")
+async def serve_video(video: str) -> FileResponse:
+    path = media.video_path(video)
     if path is None:
         raise HTTPException(status_code=404)
     return FileResponse(path)  # Starlette honours HTTP Range for free
 
 
-@app.get("/thumb/{name}")
-async def serve_thumb(name: str) -> FileResponse:
-    path = media.thumb_path(name)
+@app.get("/thumb/{video:path}")
+async def serve_thumb(video: str) -> FileResponse:
+    path = media.thumb_path(video)
     if not path.is_file():
-        generated = await asyncio.to_thread(media.generate_thumbnail, name)
+        generated = await asyncio.to_thread(media.generate_thumbnail, video)
         if generated is None:
             raise HTTPException(status_code=404)
         path = generated
