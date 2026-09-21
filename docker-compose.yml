@@ -1,11 +1,11 @@
+# Local build-from-source stack (`just up`). Enclave does not use this file — its
+# service is defined in griggx-gitops (nodes/enclave/compose.yml).
 services:
   videodl:
     build: .
     ports:
-      - "8080:8080"           # reachable on the Tailscale IP
+      - "8080:8080"
     volumes:
-      # Host storage path is configurable for easy distribution across machines.
-      # Set VIDEO_STORAGE_PATH in .env (defaults to the studio NAS path).
       - ${VIDEO_STORAGE_PATH:-/srv/data0/studio/videos}:/data/videos
     environment:
       - VIDEO_DIR=/data/videos

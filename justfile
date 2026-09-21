@@ -1,4 +1,7 @@
 # videodl dev tasks. Run `just` to list recipes.
+#
+# Production deploys are not done from here: enclave runs the service defined in
+# griggx-gitops (nodes/enclave/compose.yml) via `just enclave-deploy videodl` there.
 
 # Local video dir for development (override: just dev video_dir=/some/path)
 video_dir := justfile_directory() + "/data/videos"
@@ -36,8 +39,3 @@ down:
 # Build the image only
 build:
     docker compose build
-
-# Pull the latest published image and (re)start on the server
-deploy:
-    docker compose -f compose.prod.yaml pull
-    docker compose -f compose.prod.yaml up -d

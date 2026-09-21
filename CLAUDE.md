@@ -38,10 +38,11 @@ bump and republishes automatically.
 ## Deployment
 
 CI publishes `ghcr.io/danielgrigg/videodl:latest` + a short-SHA tag on every push to `main`.
-The enclave server does **not** deploy from this repo's `compose.prod.yaml` — its service is
-defined in the griggx-gitops repo (`nodes/enclave/compose.yml`, portless behind traefik,
-`user: "1000:1000"`) and rolled out with `just enclave-deploy videodl` from there. Treat that
-file as authoritative for production; `compose.prod.yaml` is the standalone path only.
+**This repo has no deploy step.** The enclave service is defined in the griggx-gitops repo
+(`nodes/enclave/compose.yml`: portless behind traefik, `user: "1000:1000"`, hard-pinned
+`:latest`) and rolled out with `just enclave-deploy videodl` from there. A pure code change
+needs no gitops edit; a service-shape change (env, volumes, labels) does.
+`docker-compose.yml` here is the local build-from-source stack only.
 
 ## Architecture invariants
 
